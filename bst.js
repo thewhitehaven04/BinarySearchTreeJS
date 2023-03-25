@@ -98,11 +98,36 @@ class Tree {
     callback(node);
   }
 
+  insert(value) {
+    if (this.find(value))
+      throw RangeError(
+        'This Binary Search Tree implementation does not support repeated values',
+      );
+
+    let node = this.root;
+
+    do {
+      if (value < node.data) {
+        if (node.left) {
+          node = node.left;
+        } else {
+          node.left = new TreeNode(value);
+          break;
+        }
+      } else {
+        if (node.left) {
+          node = node.right;
+        } else {
+          node.right = new TreeNode(value);
+          break;
+        }
+      }
+    } while (node);
+  }
+
   depth() {
     let _depth = 0;
-    this.preOrder(() => {
-      
-    })
+    this.preOrder(() => {});
   }
 }
 
@@ -124,9 +149,12 @@ const buildTree = function (arr) {
 
 let p = [1, 5, 0, 9, 2, 14, 18, 6, 3];
 const tree = new Tree(buildTree(p));
-console.log(prettyPrint(tree.root));
+prettyPrint(tree.root);
+tree.insert(16);
+prettyPrint(tree.root);
 
-console.log('Find: ', tree.find(14) + '\n');
+
+// console.log('Find: ', tree.find(14) + '\n');
 
 // console.log('Inorder:\n');
 // tree.inOrder((value) => console.log(value.toString()));
@@ -137,5 +165,5 @@ console.log('Find: ', tree.find(14) + '\n');
 // console.log('Postorder:\n');
 // tree.postOrder((value) => console.log(value.toString()));
 
-console.log('Level-Order : \n');
-tree.levelOrder((value) => console.log(value));
+// console.log('Level-Order : \n');
+// tree.levelOrder((value) => console.log(value));
