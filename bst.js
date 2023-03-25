@@ -1,17 +1,4 @@
-class Queue {
-  constructor() {
-    this.arr = [];
-  }
-  dequeue() {
-    return this.arr.pop();
-  }
-  enqueue(value) {
-    this.arr.unshift(value);
-  }
-  isEmpty() {
-    return this.arr.length === 0;
-  }
-}
+const { Queue } = require('./queue.js');
 
 /**
  * printer function
@@ -103,12 +90,19 @@ class Tree {
 
   postOrder(callback, node = this.root) {
     if (node.left) {
-      this.preOrder(node.left, callback);
+      this.postOrder(node.left, callback);
     }
     if (node.right) {
-      this.preOrder(node.right, callback);
+      this.postOrder(node.right, callback);
     }
     callback(node);
+  }
+
+  depth() {
+    let _depth = 0;
+    this.preOrder(() => {
+      
+    })
   }
 }
 
