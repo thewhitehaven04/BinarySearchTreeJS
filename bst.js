@@ -155,31 +155,52 @@ class Tree {
   }
 
   delete(value) {
+    const getNextInOrderSuccessor = (node) => {
+      let arr = [];
+      this.inOrder((node) => arr.push(node), node);
+      return arr[1] ?? null;
+    };
+
     this.inOrder((node) => {
-      if (node.left && node.left.data === value) {
-        let arr = [];
-        this.inOrder((node) => {
-          if (node.data !== value) {
-            arr.push(node.data);
-          }
-        }, node.left);
-        if (node.left.data === value) node.left = buildTree(arr);
+      const leftChild = node.left;
+      const rightChild = node.right;
+
+      if (leftChild?.data === value) {
+        if (!(leftChild.left || leftChild.right)) node.left = null;
+        else if (leftChild.left && leftChild.right) {
+          node.left = getNextInOrderSuccessor(leftChild);
+        } else node.left = leftChild.left ?? leftChild.right;
       }
-      if (node.right && node.right.data === value) {
-        let arr = [];
-        this.inOrder((node) => {
-          if (node.data !== value) {
-            arr.push(node.data);
-          }
-        }, node.right);
-        if (node.right.data === value) node.right = buildTree(arr);
+      if (rightChild?.data === value) {
+        if (!(rightChild.left || rightChild.right)) node.right = null;
+        else if (rightChild.left && rightChild.right) {
+          node.right = getNextInOrderSuccessor(leftChild);
+        } else node.right = leftChild.left ?? leftChild.right;
       }
     });
   }
 
-  depth() {
-    let _depth = 0;
-    this.preOrder(() => {});
+  /**
+   * @param value
+   */
+  depth(value) {
+    this.find(value);
+
+    let count = 0;
+    let currentNode = this.root;
+    while (currentNode) {
+      count += 1;
+      if (currentNode.data === value) break;
+      if (currentNode.data < value) currentNode = currentNode.left;
+      else currentNode = currentNode.right;
+    }
+    return count;
+  }
+
+  rebalance() {
+    let arr = [];
+    this.inOrder((node) => arr.push(node));
+    this.root = buildTree(arr);
   }
 }
 
@@ -203,5 +224,7 @@ prettyPrint(tree.root);
 // console.log('Level-Order:\n');
 // tree.levelOrder((value) => console.log(value));
 
-tree.delete(9);
-prettyPrint(tree.root);
+console.log('Depth: \n', tree.depth(14));
+
+// tree.delete(9);
+// prettyPrint(tree.root);
