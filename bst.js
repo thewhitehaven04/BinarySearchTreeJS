@@ -69,6 +69,7 @@ class Tree {
     return null;
   }
 
+  /** @param {function(TreeNode): any} callback */
   levelOrder(callback) {
     const q = new Queue();
     q.enqueue(this.root);
@@ -85,7 +86,7 @@ class Tree {
   }
 
   /**
-   *
+   * Perform in-order depth-first search.
    * @param {function(TreeNode): any} callback
    * @param {TreeNode} node
    */
@@ -100,6 +101,7 @@ class Tree {
   }
 
   /**
+   * Perform pre-order depth-first search.
    * @param {function(TreeNode): any} callback
    * @param {TreeNode} node
    */
@@ -114,6 +116,7 @@ class Tree {
   }
 
   /**
+   * Perform post-order depth-first search.
    * @param {function(TreeNode): any} callback
    * @param {TreeNode} node
    */
@@ -144,7 +147,7 @@ class Tree {
           break;
         }
       } else {
-        if (node.left) {
+        if (node.right) {
           node = node.right;
         } else {
           node.right = new TreeNode(value);
@@ -181,20 +184,30 @@ class Tree {
   }
 
   /**
-   * @param value
+   * Returns the number of edges between the node with the specified value
+   * and the tree's root.
+   * @param {any} value
    */
   depth(value) {
-    this.find(value);
-
+    let node = this.find(value);
     let count = 0;
     let currentNode = this.root;
-    while (currentNode) {
+    while (currentNode !== node) {
       count += 1;
-      if (currentNode.data === value) break;
+      if (currentNode.data === node) break;
       if (currentNode.data < value) currentNode = currentNode.left;
       else currentNode = currentNode.right;
     }
     return count;
+  }
+
+  /** Returns the number of edges between the node and the deepest leaf.
+   * @param {any} value
+   */
+  height(value) {
+    let arr = [];
+    tree.preOrder((value) => arr.push(value.data), this.find(value));
+    return arr.findIndex((val) => val === Math.min(...arr));
   }
 
   rebalance() {
@@ -204,13 +217,13 @@ class Tree {
   }
 }
 
-let p = [1, 5, 0, 9, 2, 14, 18, 6, 3];
-p.sort((a, b) => (a < b ? 1 : -1));
+let p = [2, 1, 5, 0, 9, 14, 18, 6, 3, 24, 10, 4, 7, 11, 8, 16, 48, 13, 15];
+p.sort((a, b) => (a > b ? 1 : -1));
 
 const tree = new Tree(buildTree(p));
 prettyPrint(tree.root);
 
-// console.log('Find:\n', tree.find(14) + '\n');
+console.log('Find:\n', tree.find(14).data + '\n');
 
 // console.log('Inorder:\n');
 // tree.inOrder((value) => console.log(value.data));
@@ -221,10 +234,13 @@ prettyPrint(tree.root);
 // console.log('Postorder:\n');
 // tree.postOrder((value) => console.log(value.data));
 
+const value = 15;
+console.log(`Height of ${value}: `, tree.height(value));
+
 // console.log('Level-Order:\n');
 // tree.levelOrder((value) => console.log(value));
 
-console.log('Depth: \n', tree.depth(14));
+// console.log('Depth:', tree.depth(18) + '\n');
 
 // tree.delete(9);
 // prettyPrint(tree.root);
