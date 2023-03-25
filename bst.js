@@ -16,6 +16,22 @@ const prettyPrint = (node, prefix = '', isLeft = true) => {
   }
 };
 
+/**
+ * @param {Array} arr
+ * @returns {TreeNode}
+ */
+function buildTree(arr) {
+  const mid = Math.floor(arr.length / 2);
+  const node = new TreeNode(arr[mid]);
+  if (mid >= 1) {
+    node.left = buildTree(arr.slice(0, mid));
+  }
+  if (arr.length > mid + 1) {
+    node.right = buildTree(arr.slice(mid + 1));
+  }
+  return node;
+}
+
 class TreeNode {
   constructor(data) {
     this.data = data;
@@ -68,6 +84,11 @@ class Tree {
     } while (!q.isEmpty());
   }
 
+  /**
+   *
+   * @param {function(TreeNode): any} callback
+   * @param {TreeNode} node
+   */
   inOrder(callback, node = this.root) {
     if (node.left) {
       this.inOrder(callback, node.left);
@@ -78,22 +99,30 @@ class Tree {
     }
   }
 
+  /**
+   * @param {function(TreeNode): any} callback
+   * @param {TreeNode} node
+   */
   preOrder(callback, node = this.root) {
     callback(node);
     if (node.left) {
-      this.preOrder(node.left, callback);
+      this.preOrder(callback, node.left);
     }
     if (node.right) {
-      this.preOrder(node.right, callback);
+      this.preOrder(callback, node.right);
     }
   }
 
+  /**
+   * @param {function(TreeNode): any} callback
+   * @param {TreeNode} node
+   */
   postOrder(callback, node = this.root) {
     if (node.left) {
-      this.postOrder(node.left, callback);
+      this.postOrder(callback, node.left);
     }
     if (node.right) {
-      this.postOrder(node.right, callback);
+      this.postOrder(callback, node.right);
     }
     callback(node);
   }
@@ -125,45 +154,54 @@ class Tree {
     } while (node);
   }
 
+  delete(value) {
+    this.inOrder((node) => {
+      if (node.left && node.left.data === value) {
+        let arr = [];
+        this.inOrder((node) => {
+          if (node.data !== value) {
+            arr.push(node.data);
+          }
+        }, node.left);
+        if (node.left.data === value) node.left = buildTree(arr);
+      }
+      if (node.right && node.right.data === value) {
+        let arr = [];
+        this.inOrder((node) => {
+          if (node.data !== value) {
+            arr.push(node.data);
+          }
+        }, node.right);
+        if (node.right.data === value) node.right = buildTree(arr);
+      }
+    });
+  }
+
   depth() {
     let _depth = 0;
     this.preOrder(() => {});
   }
 }
 
-/**
- * @param {Array} arr
- * @returns {TreeNode}
- */
-const buildTree = function (arr) {
-  const mid = Math.floor(arr.length / 2);
-  const node = new TreeNode(arr[mid]);
-  if (mid >= 1) {
-    node.left = buildTree(arr.slice(0, mid));
-  }
-  if (arr.length > mid + 1) {
-    node.right = buildTree(arr.slice(mid + 1));
-  }
-  return node;
-};
-
 let p = [1, 5, 0, 9, 2, 14, 18, 6, 3];
+p.sort((a, b) => (a < b ? 1 : -1));
+
 const tree = new Tree(buildTree(p));
 prettyPrint(tree.root);
-tree.insert(16);
-prettyPrint(tree.root);
 
-
-// console.log('Find: ', tree.find(14) + '\n');
+// console.log('Find:\n', tree.find(14) + '\n');
 
 // console.log('Inorder:\n');
-// tree.inOrder((value) => console.log(value.toString()));
+// tree.inOrder((value) => console.log(value.data));
 
 // console.log('Preorder:\n');
-// tree.preOrder((value) => console.log(value.toString()));
+// tree.preOrder((value) => console.log(value.data));
 
 // console.log('Postorder:\n');
-// tree.postOrder((value) => console.log(value.toString()));
+// tree.postOrder((value) => console.log(value.data));
 
-// console.log('Level-Order : \n');
+// console.log('Level-Order:\n');
 // tree.levelOrder((value) => console.log(value));
+
+tree.delete(9);
+prettyPrint(tree.root);
