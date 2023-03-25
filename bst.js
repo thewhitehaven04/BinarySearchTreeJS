@@ -49,22 +49,36 @@ class Tree {
 
   /** @param {any} value */
   find(value) {
-    const queue = new Queue();
-    let node = this.root;
+    const q = new Queue();
+    q.enqueue(this.root);
     do {
+      let node = q.dequeue();
       if (node.data === value) {
         return node;
       }
       if (node.left) {
-        queue.enqueue(node.left);
+        q.enqueue(node.left);
       }
       if (node.right) {
-        queue.enqueue(node.right);
+        q.enqueue(node.right);
       }
-
-      node = queue.dequeue();
-    } while (!queue.isEmpty());
+    } while (!q.isEmpty());
     return null;
+  }
+
+  levelOrder(callback) {
+    const q = new Queue();
+    q.enqueue(this.root);
+    do {
+      let node = q.dequeue();
+      callback(node);
+      if (node.left) {
+        q.enqueue(node.left);
+      }
+      if (node.right) {
+        q.enqueue(node.right);
+      }
+    } while (!q.isEmpty());
   }
 
   inOrder(callback, node = this.root) {
@@ -96,7 +110,6 @@ class Tree {
     }
     callback(node);
   }
-
 }
 
 /**
@@ -119,13 +132,16 @@ let p = [1, 5, 0, 9, 2, 14, 18, 6, 3];
 const tree = new Tree(buildTree(p));
 console.log(prettyPrint(tree.root));
 
-console.log('Find: ', tree.find(8) + '\n');
+console.log('Find: ', tree.find(14) + '\n');
 
-console.log("Inorder:\n");
-tree.inOrder((value) => console.log(value.toString()));
+// console.log('Inorder:\n');
+// tree.inOrder((value) => console.log(value.toString()));
 
-console.log("Preorder:\n");
-tree.preOrder((value) => console.log(value.toString()));
+// console.log('Preorder:\n');
+// tree.preOrder((value) => console.log(value.toString()));
 
-console.log("Postorder:\n");
-tree.postOrder((value) => console.log(value.toString()));
+// console.log('Postorder:\n');
+// tree.postOrder((value) => console.log(value.toString()));
+
+console.log('Level-Order : \n');
+tree.levelOrder((value) => console.log(value));
