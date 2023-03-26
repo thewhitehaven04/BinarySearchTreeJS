@@ -192,13 +192,19 @@ class Tree {
     let node = this.find(value);
     let count = 0;
     let currentNode = this.root;
-    while (currentNode !== node) {
+    while (currentNode !== node && currentNode) {
       count += 1;
-      if (currentNode.data === node) break;
-      if (currentNode.data < value) currentNode = currentNode.left;
-      else currentNode = currentNode.right;
+      if (currentNode.data > value) currentNode = currentNode.left;
+      else if (currentNode.data < value) currentNode = currentNode.right;
+      else break;
     }
     return count;
+  }
+
+  isBalanced() {
+    return (
+      this.height(this.root?.left.data) === this.height(this.root?.right.data)
+    );
   }
 
   /** Returns the number of edges between the node and the deepest leaf.
@@ -223,7 +229,8 @@ p.sort((a, b) => (a > b ? 1 : -1));
 const tree = new Tree(buildTree(p));
 prettyPrint(tree.root);
 
-console.log('Find:\n', tree.find(14).data + '\n');
+console.log('Balanced: ', tree.isBalanced());
+console.log('Find: ', tree.find(14).data + '\n');
 
 // console.log('Inorder:\n');
 // tree.inOrder((value) => console.log(value.data));
@@ -234,13 +241,14 @@ console.log('Find:\n', tree.find(14).data + '\n');
 // console.log('Postorder:\n');
 // tree.postOrder((value) => console.log(value.data));
 
-const value = 15;
-console.log(`Height of ${value}: `, tree.height(value));
-
 // console.log('Level-Order:\n');
 // tree.levelOrder((value) => console.log(value));
 
-// console.log('Depth:', tree.depth(18) + '\n');
+const value = 15;
+console.log(`Height of ${value}: `, tree.height(value));
 
-// tree.delete(9);
-// prettyPrint(tree.root);
+const depthValue = 18;
+console.log(`Depth of ${depthValue}: `, tree.depth(depthValue) + '\n');
+
+tree.delete(9);
+prettyPrint(tree.root);
