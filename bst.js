@@ -158,10 +158,17 @@ class Tree {
   }
 
   delete(value) {
-    const getNextInOrderSuccessor = (node) => {
+    /**
+     * @param {TreeNode} startNode
+     * @returns {TreeNode}
+     */
+    const getNextInOrderSuccessor = (startNode) => {
       let arr = [];
-      this.inOrder((node) => arr.push(node), node);
-      return arr[1] ?? null;
+      this.inOrder((iterNode) => arr.push(iterNode.data), startNode);
+      console.log(arr);
+      return (
+        arr[arr.findIndex((value) => value === startNode.data) + 1] ?? null
+      );
     };
 
     this.inOrder((node) => {
@@ -171,13 +178,18 @@ class Tree {
       if (leftChild?.data === value) {
         if (!(leftChild.left || leftChild.right)) node.left = null;
         else if (leftChild.left && leftChild.right) {
-          node.left = getNextInOrderSuccessor(leftChild);
+          const successor = this.find(getNextInOrderSuccessor(leftChild));
+          successor.left = leftChild?.left;
+          successor.right = leftChild?.right;
+          node.left = successor;
         } else node.left = leftChild.left ?? leftChild.right;
-      }
-      if (rightChild?.data === value) {
+      } else if (rightChild?.data === value) {
         if (!(rightChild.left || rightChild.right)) node.right = null;
         else if (rightChild.left && rightChild.right) {
-          node.right = getNextInOrderSuccessor(leftChild);
+          const successor = this.find(getNextInOrderSuccessor(rightChild));
+          successor.left = rightChild?.left;
+          successor.right = rightChild?.right;
+          node.right = successor;
         } else node.right = leftChild.left ?? leftChild.right;
       }
     });
@@ -232,8 +244,8 @@ prettyPrint(tree.root);
 console.log('Balanced: ', tree.isBalanced());
 console.log('Find: ', tree.find(14).data + '\n');
 
-// console.log('Inorder:\n');
-// tree.inOrder((value) => console.log(value.data));
+console.log('Inorder:\n');
+tree.inOrder((value) => console.log(value.data));
 
 // console.log('Preorder:\n');
 // tree.preOrder((value) => console.log(value.data));
@@ -244,11 +256,11 @@ console.log('Find: ', tree.find(14).data + '\n');
 // console.log('Level-Order:\n');
 // tree.levelOrder((value) => console.log(value));
 
-const value = 15;
-console.log(`Height of ${value}: `, tree.height(value));
+// const value = 15;
+// console.log(`Height of ${value}: `, tree.height(value));
 
-const depthValue = 18;
-console.log(`Depth of ${depthValue}: `, tree.depth(depthValue) + '\n');
+// const depthValue = 18;
+// console.log(`Depth of ${depthValue}: `, tree.depth(depthValue) + '\n');
 
-tree.delete(9);
+tree.delete(15);
 prettyPrint(tree.root);
