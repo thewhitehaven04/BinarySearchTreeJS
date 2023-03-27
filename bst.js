@@ -158,41 +158,63 @@ class Tree {
   }
 
   delete(value) {
+    let parent;
+    let nodeToDelete = this.find(value);
+
     /**
-     * @param {TreeNode} startNode
+     * @param {TreeNode} node
      * @returns {TreeNode}
      */
-    const getNextInOrderSuccessor = (startNode) => {
-      let arr = [];
-      this.inOrder((iterNode) => arr.push(iterNode.data), startNode);
-      console.log(arr);
-      return (
-        arr[arr.findIndex((value) => value === startNode.data) + 1] ?? null
-      );
+    const getInOrderPredecessor = (node) => {
+      let ret;
+      let previous;
+      this.inOrder((treeNode) => {
+        if (treeNode === node) {
+          ret = previous;
+        }
+        previous = treeNode;
+      });
+      return ret;
     };
 
-    this.inOrder((node) => {
-      const leftChild = node.left;
-      const rightChild = node.right;
-
-      if (leftChild?.data === value) {
-        if (!(leftChild.left || leftChild.right)) node.left = null;
-        else if (leftChild.left && leftChild.right) {
-          const successor = this.find(getNextInOrderSuccessor(leftChild));
-          successor.left = leftChild?.left;
-          successor.right = leftChild?.right;
-          node.left = successor;
-        } else node.left = leftChild.left ?? leftChild.right;
-      } else if (rightChild?.data === value) {
-        if (!(rightChild.left || rightChild.right)) node.right = null;
-        else if (rightChild.left && rightChild.right) {
-          const successor = this.find(getNextInOrderSuccessor(rightChild));
-          successor.left = rightChild?.left;
-          successor.right = rightChild?.right;
-          node.right = successor;
-        } else node.right = leftChild.left ?? leftChild.right;
+    this.preOrder((node) => {
+      // find parent
+      if (node.left === nodeToDelete || node.right === nodeToDelete) {
+        parent = node;
       }
     });
+
+    if (!(nodeToDelete.left || nodeToDelete.right)) {
+      parent.left === nodeToDelete
+        ? (parent.left = null)
+        : (parent.right = null);
+    } else if (nodeToDelete.left && nodeToDelete.right) {
+      const predecessor = getInOrderPredecessor(nodeToDelete);
+
+      let predecessorParent;
+      this.preOrder((node) => {
+        if (node.left === predecessor || node.right === predecessor) {
+          predecessorParent = node;
+        }
+      });
+
+      predecessor.left = nodeToDelete.left;
+      predecessor.right = nodeToDelete.right;
+
+      predecessorParent.left === predecessor
+        ? (predecessorParent.left = null)
+        : (predecessorParent.right = null);
+
+      parent.left === nodeToDelete
+        ? (parent.left = predecessor)
+        : (parent.right = predecessor);
+
+    } else {
+      let child = nodeToDelete.left ?? nodeToDelete.right;
+      parent.left === nodeToDelete
+        ? (parent.left = child)
+        : (parent.right = child);
+    }
   }
 
   /**
@@ -224,7 +246,9 @@ class Tree {
    */
   height(value) {
     let arr = [];
-    tree.preOrder((value) => arr.push(value.data), this.find(value));
+    tree.preOrder((value) => {
+      arr.push(value.data);
+    }, this.find(value));
     return arr.findIndex((val) => val === Math.min(...arr));
   }
 
@@ -262,5 +286,5 @@ tree.inOrder((value) => console.log(value.data));
 // const depthValue = 18;
 // console.log(`Depth of ${depthValue}: `, tree.depth(depthValue) + '\n');
 
-tree.delete(15);
+tree.delete(4);
 prettyPrint(tree.root);
