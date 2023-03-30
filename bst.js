@@ -208,7 +208,6 @@ class Tree {
       parent.left === nodeToDelete
         ? (parent.left = predecessor)
         : (parent.right = predecessor);
-
     } else {
       let child = nodeToDelete.left ?? nodeToDelete.right;
       parent.left === nodeToDelete
@@ -236,20 +235,26 @@ class Tree {
   }
 
   isBalanced() {
-    return (
-      this.height(this.root?.left.data) === this.height(this.root?.right.data)
-    );
+    return this.height(this.root.left) === this.height(this.root.right);
   }
 
   /** Returns the number of edges between the node and the deepest leaf.
-   * @param {any} value
+   * @param {TreeNode} node
    */
-  height(value) {
-    let arr = [];
-    tree.preOrder((value) => {
-      arr.push(value.data);
-    }, this.find(value));
-    return arr.findIndex((val) => val === Math.min(...arr));
+  height(node) {
+    const traverse = (node, length = 0) => {
+      let leftLength = length;
+      let rightLength = length;
+      length++;
+      if (node.left) {
+        leftLength = traverse(node.left, length);
+      }
+      if (node.right) {
+        rightLength = traverse(node.right, length);
+      }
+      return Math.max(leftLength, rightLength);
+    };
+    return traverse(node);
   }
 
   rebalance() {
@@ -271,20 +276,33 @@ console.log('Find: ', tree.find(14).data + '\n');
 console.log('Inorder:\n');
 tree.inOrder((value) => console.log(value.data));
 
-// console.log('Preorder:\n');
-// tree.preOrder((value) => console.log(value.data));
+console.log('Preorder:\n');
+tree.preOrder((value) => console.log(value.data));
 
-// console.log('Postorder:\n');
-// tree.postOrder((value) => console.log(value.data));
+console.log('Postorder:\n');
+tree.postOrder((value) => console.log(value.data));
 
-// console.log('Level-Order:\n');
-// tree.levelOrder((value) => console.log(value));
+console.log('Level-Order:\n');
+tree.levelOrder((value) => console.log(value));
 
-// const value = 15;
-// console.log(`Height of ${value}: `, tree.height(value));
-
-// const depthValue = 18;
-// console.log(`Depth of ${depthValue}: `, tree.depth(depthValue) + '\n');
+const depthValue = 18;
+console.log(`Depth of ${depthValue}: `, tree.depth(depthValue) + '\n');
 
 tree.delete(4);
+
+tree.insert(103);
+tree.insert(101);
+tree.insert(121);
+tree.insert(109);
+tree.insert(141);
+tree.insert(104);
+tree.insert(100);
 prettyPrint(tree.root);
+
+const value = 15;
+console.log(`Height of ${value}: `, tree.height(tree.find(value)));
+
+console.log('Balanced ', tree.isBalanced());
+tree.rebalance();
+
+console.log('Balanced ', tree.isBalanced());
